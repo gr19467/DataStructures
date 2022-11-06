@@ -129,7 +129,13 @@ public class SinglyLinkedList<T> implements List<T> {
         }
 
         for (int i = index; i < count - 1; i++) {
-            ptr.next = ptr;
+            ptr.data = ptr.next.data;
+            ptr = ptr.next;
+
+            if (i == count - 2){
+                ptr = tail;
+                break;
+            }
         }
 
         count--;
@@ -138,7 +144,17 @@ public class SinglyLinkedList<T> implements List<T> {
 
     @Override
     public int indexOf(T element) {
-        return 0;
+
+        Node ptr = head;
+
+        for (int i = 0; i < count - 1; i++) {
+            if(ptr.data == element){
+                return i;
+            }else{
+                ptr = ptr.next;
+            }
+        }
+        return -1;
     }
 
     private class Node {
