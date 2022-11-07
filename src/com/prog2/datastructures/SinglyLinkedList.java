@@ -124,14 +124,19 @@ public class SinglyLinkedList<T> implements List<T> {
 
         Node ptr = head;
 
+        //get ptr to the index we need to remove
         for (int i = 0; i < index; i++) {
             ptr = ptr.next;
         }
 
+        //once at that index
         for (int i = index; i < count - 1; i++) {
+            //set the index's data we're on to the next index's data
             ptr.data = ptr.next.data;
+            //move to the next index
             ptr = ptr.next;
 
+            //once we're at the new tail, set the tail's ptr
             if (i == count - 2){
                 ptr = tail;
                 break;
