@@ -1,4 +1,5 @@
 import com.prog2.datastructures.ArrayList;
+import com.prog2.datastructures.DoublyLinkedList;
 import com.prog2.datastructures.SinglyLinkedList;
 import com.prog2.interfaces.List;
 
@@ -16,7 +17,7 @@ public class Main {
     }
 
     void test(){
-        SinglyLinkedList<String> list = new SinglyLinkedList<>();
+        DoublyLinkedList<String> list = new DoublyLinkedList<>();
 
         list.prepend("Frodo").prepend("Sam").prepend("Merry").prepend("Pippin");
 
