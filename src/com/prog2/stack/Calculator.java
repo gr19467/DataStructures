@@ -106,7 +106,7 @@ public class Calculator extends GraphicsProgram {
             while(i <= strlen - 1) {
 
                 //store the character found at a given point(i)
-
+                
                 //skip over blank spaces (this shouldn't happen)
 
                 //Processing the input String should take the following steps:
