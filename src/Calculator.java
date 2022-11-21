@@ -1,11 +1,9 @@
-package com.prog2.stack;
-
 import acm.graphics.GLabel;
 import acm.program.GraphicsProgram;
+import com.prog2.stack.Stack;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.nio.charset.StandardCharsets;
 
 public class Calculator extends GraphicsProgram {
 
@@ -96,7 +94,7 @@ public class Calculator extends GraphicsProgram {
         int i = 0; //an iteration marker for the first while loop
         char ch;
 
-        StringBuffer s;
+        StringBuffer s = new StringBuffer();
 
         if(!input.isEmpty()){ //ensure there is actually some input to process
 
@@ -106,33 +104,59 @@ public class Calculator extends GraphicsProgram {
             while(i <= strlen - 1) {
 
                 //store the character found at a given point(i)
-
+                ch = input.charAt(i);
                 //skip over blank spaces (this shouldn't happen)
-
+                if (ch == ' ') {
+                    i++;
+                    continue;
+                }
                 //Processing the input String should take the following steps:
-
+                postMessage("Searching for symbols...");
                     /*
                     1) Check for numbers. Question to ask yourself: how do I handle multi-digit numbers?
                         ch <= '9' && ch >= '0'
                         */
+                if(ch <= '9' && ch >= '0'){
+                    s.append(ch);
+                    ns.push(Integer.parseInt(new String(s)));
+                    System.out.println(ch);
 
-                //  2) Check for a ( which indicates the start of a block which must be evaluated before all others
+                    //  2) Check for a ( which indicates the start of a block which must be evaluated before all others
+                }else if(ch == '('){
+                    op.push(ch);
 
-                //  3) Check for a ) which indicates the end of a block that must be evaluated before all others
+                    //  3) Check for a ) which indicates the end of a block that must be evaluated before all others
+                }else if(ch == ')'){
+                    //calculate everything between the parenthesis
+
+                    //remove the opening parenthesis.
 
                     /*
-                        4) Check for any non-parenthesis operator, and determine if it has a higher precedence than the
+                    4) Check for any non-parenthesis operator, and determine if it has a higher precedence than the
                        operator that is currently on the top of the op stack. When we find an op that has precedence
                        ('*' or '/' vs '+' or '-') we should calculate the result of the current operator immediately,
                        and push the result onto the number stack.
                     */
-
+                }else if(ch == '+' || ch == '-' || ch == '*' || ch == '/'){
+                    op.push(ch);
+                    System.out.println(ch);
+                }
                     /*
-                        5) As the primary loop reaches the end of an iteration, don't forget to increment
+                    5) As the primary loop reaches the end of an iteration, don't forget to increment
                     */
+                i++;
 
-                postMessage("Searching for symbols...");
+            }//end of primary loop
+            //it is possible that the op stack/number stack will still have content
+            //these must be evaluated until the stacks are empty.
+            
+            //if there are still operators on the op stack, keep calculating.
+            if(!op.isEmpty()){
+                ns.push(calculate(op.pop(),ns.pop(),ns.pop()));
+                System.out.println(ns.peek());
             }
+            //return whatever is left on the number stack
+            return ns.pop();
 
         }else{
             return 0;
