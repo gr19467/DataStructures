@@ -1,8 +1,8 @@
 import acm.graphics.GLabel;
 import acm.program.GraphicsProgram;
 import com.prog2.stack.Stack;
-
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 
 public class Calculator extends GraphicsProgram {
@@ -39,19 +39,19 @@ public class Calculator extends GraphicsProgram {
         addActionListeners();
 
         display.setFont("Times-bold-24");
-        add(display,0,18);
+        add(display, 0, 18);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae){
-        switch(ae.getActionCommand()){
 
-            case "=": //cause an evaluation
+        switch (ae.getActionCommand()){
 
-                System.out.flush();
+            case "=": // cause an evaluation
+
+                System.out.flush(); // clear the console
 
                 int response = evaluate(display.getLabel());
-
-                display.setLabel("" + response);
 
                 StringBuilder ops = new StringBuilder();
                 ops.append(response);
@@ -61,16 +61,15 @@ public class Calculator extends GraphicsProgram {
 
                 break;
 
-            case "C": //clear the display
-
+            case "C": // clear the display
                 display.setLabel("");
                 break;
 
-            case "<": //delete a single character from the display IF a character exists to be deleted
+            case "<": // delete a single character from the display IF a character exists to be deleted
 
-                if(display.getLabel().length() > 0){
+                if(display.getLabel().length()>0){
                     StringBuilder sb = new StringBuilder(display.getLabel());
-                    sb = sb.deleteCharAt(display.getLabel().length() - 1);
+                    sb = sb.deleteCharAt(display.getLabel().length()-1);
                     display.setLabel(sb.toString());
                 }
 
@@ -79,91 +78,6 @@ public class Calculator extends GraphicsProgram {
             default:
                 display.setLabel(display.getLabel() + ae.getActionCommand());
         }
-
-    }
-
-    private int evaluate(String input){
-        int strlen = input.length();
-
-        //number stack: the operands of your math
-        Stack<Integer> ns = new Stack<>();
-
-        //operator stack: the operators of your math
-        Stack<Character> op = new Stack<>();
-
-        int i = 0; //an iteration marker for the first while loop
-        char ch;
-
-        StringBuffer s = new StringBuffer();
-
-        if(!input.isEmpty()){ //ensure there is actually some input to process
-
-            postMessage("Beginning evaluation...", 100);
-
-            //loop across the input String
-            while(i <= strlen - 1) {
-
-                //store the character found at a given point(i)
-                ch = input.charAt(i);
-                //skip over blank spaces (this shouldn't happen)
-                if (ch == ' ') {
-                    i++;
-                    continue;
-                }
-                //Processing the input String should take the following steps:
-                postMessage("Searching for symbols...");
-                    /*
-                    1) Check for numbers. Question to ask yourself: how do I handle multi-digit numbers?
-                        ch <= '9' && ch >= '0'
-                        */
-                if(ch <= '9' && ch >= '0'){
-                    s.append(ch);
-                    ns.push(Integer.parseInt(new String(s)));
-                    System.out.println(ch);
-
-                    //  2) Check for a ( which indicates the start of a block which must be evaluated before all others
-                }else if(ch == '('){
-                    op.push(ch);
-
-                    //  3) Check for a ) which indicates the end of a block that must be evaluated before all others
-                }else if(ch == ')'){
-                    //calculate everything between the parenthesis
-
-                    //remove the opening parenthesis.
-
-                    /*
-                    4) Check for any non-parenthesis operator, and determine if it has a higher precedence than the
-                       operator that is currently on the top of the op stack. When we find an op that has precedence
-                       ('*' or '/' vs '+' or '-') we should calculate the result of the current operator immediately,
-                       and push the result onto the number stack.
-                    */
-                }else if(ch == '+' || ch == '-' || ch == '*' || ch == '/'){
-                    op.push(ch);
-                    System.out.println(ch);
-                }
-                    /*
-                    5) As the primary loop reaches the end of an iteration, don't forget to increment
-                    */
-                i++;
-
-            }//end of primary loop
-            //it is possible that the op stack/number stack will still have content
-            //these must be evaluated until the stacks are empty.
-            System.out.println(op.peek());
-            System.out.println(ns.peek());
-            
-            //if there are still operators on the op stack, keep calculating.
-            if(!op.isEmpty()){
-                ns.push(calculate(op.pop(),ns.pop(),ns.pop()));
-                System.out.println(ns.peek());
-            }
-            //return whatever is left on the number stack
-            return ns.pop();
-
-        }else{
-            return 0;
-        }
-
     }
 
     private boolean precedence(char peek, char ch){
@@ -171,33 +85,136 @@ public class Calculator extends GraphicsProgram {
             return true;
         }
 
+        // forces left to right operation
         if(peek != ch && peek != '('){
             return true;
         }
 
         return false;
+
+
     }
 
     private int calculate(char op, int a, int b){
         if(op == '*'){
-            return a * b;
+            return a*b;
         }
 
         if(op == '/'){
-            return a / b;
+            return a/b;
         }
 
         if(op == '+'){
-            return a + b;
+            return a+b;
         }
 
         if(op == '-'){
-            return a - b;
+            return a-b;
         }
 
         return 0;
     }
 
+
+    private int evaluate(String input){
+
+        // I don't want to say input.length() all the time
+        int strlen = input.length();
+
+        // number stack: the operands of your math
+        Stack<Integer> ns = new Stack<>();
+
+        // operator stack: the operators of your math
+        Stack<Character> op = new Stack<>();
+
+
+        int i = 0; // an iteration marker for the first while loop
+        char ch;
+
+        StringBuffer s;
+
+        if(!input.isEmpty()){ // ensure there is actually some input to process
+
+            postMessage("Beginning evaluation...", 100);
+
+            // loop across the input String
+            while(i < strlen) {
+                // store the character found at a given point (i)
+                ch = input.charAt(i);
+                // skip over blank spaces (this shouldn't happen)
+                if(ch == ' '){
+                    i++;
+                    continue;
+                }
+
+                postMessage("Searching for symbols...");
+
+                if(ch <= '9' && ch >= '0'){
+                    // you have found a number.
+                    postMessage("Found number");
+                    // what if the number has multiple digits though?
+                    // push the complete number onto the number stack. To do so:
+                    // ns.push(Integer.parseInt(new String(s)));
+
+                    s = new StringBuffer();
+                    s.append(ch);
+                    i++;
+
+
+                    while(i < strlen && input.charAt(i) <= '9' && input.charAt(i) >= '0'){
+                        s.append(input.charAt(i));
+                        i++;
+                    }
+
+
+                    ns.push(Integer.parseInt(new String(s)));
+                    continue;
+
+                } else if(ch == '('){
+                    // you have found an opening paren.
+                    postMessage("Found opening parenthesis.");
+                    // don't do anything yet, just add it to the op stack.
+                    op.push(ch);
+                } else if(ch == ')'){
+                    // you have found a closing paren.
+                    // Go ahead and calculate everything on the op stack until you find the opening paren
+                    // remove the opening paren.
+                } else {
+                    // this is where you have found an operator. React accordingly.
+                        /*
+                determine if it has a higher precedence
+                than the operator that is currently on top of the op stack.
+                When we find an op that has precedence ( '*' or '/' vs '+' or '-'),
+                we should calculate the result of the current operator immediately,
+                and push the result onto the number stack.
+                         */
+                    op.push(ch);
+                }
+
+
+
+
+
+            } // end of outer loop and primary evaluation
+
+            // it is possible that the op stack/number stack will still have contents.
+            // these must be evaluated until the stacks are empty.
+
+            // basically, if there are still operators on the op stack, keep calculating.
+            
+
+            // return whatever is left on the number stack.
+            return ns.pop();
+
+        } else {
+            return 0;
+        }
+
+
+    }
+
+
+    // for debugging use
     private void postMessage(String s, int time){
         System.out.println(s);
         pause(time);
