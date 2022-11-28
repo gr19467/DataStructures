@@ -104,11 +104,7 @@ public class Calculator extends GraphicsProgram {
             while(i <= strlen - 1) {
 
                 //store the character found at a given point(i)
-<<<<<<< HEAD:src/com/prog2/stack/Calculator.java
-                
-=======
                 ch = input.charAt(i);
->>>>>>> master:src/Calculator.java
                 //skip over blank spaces (this shouldn't happen)
                 if (ch == ' ') {
                     i++;
@@ -153,6 +149,8 @@ public class Calculator extends GraphicsProgram {
             }//end of primary loop
             //it is possible that the op stack/number stack will still have content
             //these must be evaluated until the stacks are empty.
+            System.out.println(op.peek());
+            System.out.println(ns.peek());
             
             //if there are still operators on the op stack, keep calculating.
             if(!op.isEmpty()){
